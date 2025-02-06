@@ -25,20 +25,20 @@ let
 in
 buildPythonPackage rec {
   pname = "primp";
-  version = "0.6.5";
+  version = "0.12.0";
   pyproject = true;
 
   src = fetchFromGitHub {
     owner = "deedy5";
     repo = "primp";
     tag = "v${version}";
-    hash = "sha256-dexJdeNGpRsPLk8b/gNeQc1dsQLOiXNL5zgDEN9qHfQ=";
+    hash = "sha256-yzcrUER+NiDfSjJ3my45IS+2GmeusvJgyX5nFSaqFUk=";
   };
 
   cargoDeps = rustPlatform.fetchCargoVendor {
     inherit src;
     name = "${pname}-${version}";
-    hash = "sha256-s+LAuZmnmTDPIFDSi9AkyWposFFnboJCmog1kiEBnrw=";
+    hash = "sha256-gCNnP0B0D6AJ1L/E6sQKASx8BbSJU5jTNia+tL2USvU=";
   };
 
   nativeBuildInputs = [
