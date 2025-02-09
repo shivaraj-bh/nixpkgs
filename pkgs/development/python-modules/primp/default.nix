@@ -30,7 +30,7 @@ let
       # See https://github.com/0x676e67/boring2/blob/1a0f1cd24e728aac100df68027c820f858199224/boring-sys/build/main.rs#L486-L489
       (fetchpatch {
         name = "boringssl-44b3df6f03d85c901767250329c571db405122d5.patch";
-        url = "https://raw.githubusercontent.com/0x676e67/boring2/refs/tags/v4.14.1/boring-sys/patches/boringssl-44b3df6f03d85c901767250329c571db405122d5.patch";
+        url = "https://raw.githubusercontent.com/0x676e67/boring2/4edbff8cade24d5d83cc372c4502b59c5192b5a1/boring-sys/patches/boringssl-44b3df6f03d85c901767250329c571db405122d5.patch";
         hash = "sha256-lM+2lLvfDHnxLl+OgZ6R8Y4Z6JfA9AiDqboT1mbxmao=";
       })
     ];
