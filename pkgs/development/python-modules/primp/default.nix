@@ -12,15 +12,45 @@
   patchelf,
   gcc-unwrapped,
   python,
+  fetchpatch,
 }:
 
 let
+  # boringssl source obtained from https://github.com/0x676e67/boring2/tree/1a0f1cd24e728aac100df68027c820f858199224/boring-sys/deps
+  boringsslSrc = fetchFromGitHub {
+    owner = "google";
+    repo = "boringssl";
+    rev = "44b3df6f03d85c901767250329c571db405122d5";
+    hash = "sha256-REELo7X9aFy2OHjubYLO1UQXLTgekD4QFd2vyFthIrg=";
+  };
+  boringsslPatched = boringssl.overrideAttrs (oa: {
+    src = boringsslSrc;
+    patches = [
+      # A patch required to build boringssl compatible with `boring-sys2`.
+      # See https://github.com/0x676e67/boring2/blob/1a0f1cd24e728aac100df68027c820f858199224/boring-sys/build/main.rs#L486-L489
+      (fetchpatch {
+        name = "boringssl-44b3df6f03d85c901767250329c571db405122d5.patch";
+        url = "https://raw.githubusercontent.com/0x676e67/boring2/refs/tags/v4.14.1/boring-sys/patches/boringssl-44b3df6f03d85c901767250329c571db405122d5.patch";
+        hash = "sha256-lM+2lLvfDHnxLl+OgZ6R8Y4Z6JfA9AiDqboT1mbxmao=";
+      })
+    ];
+    installPhase = ''
+      mkdir -p $bin/bin $dev $out/lib
+
+      mv bssl $bin/bin
+
+      mv libssl.a           $out/lib
+      mv libcrypto.a     $out/lib
+
+      mv ../src/include $dev
+    '';
+  });
   # boring-sys expects the static libraries in build/ instead of lib/
   boringssl-wrapper = runCommand "boringssl-wrapper" { } ''
     mkdir $out
     cd $out
-    ln -s ${boringssl.out}/lib build
-    ln -s ${boringssl.dev}/include include
+    ln -s ${boringsslPatched.out}/lib build
+    ln -s ${boringsslPatched.dev}/include include
   '';
 in
 buildPythonPackage rec {
@@ -58,6 +88,7 @@ buildPythonPackage rec {
   ];
 
   env.BORING_BSSL_PATH = boringssl-wrapper;
+  env.BORING_BSSL_ASSUME_PATCHED = true;
 
   optional-dependencies = {
     dev = [ pytest ];
