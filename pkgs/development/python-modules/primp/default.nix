@@ -42,6 +42,12 @@ let
       rm ../BUILD
     '') + oa.preBuild;
 
+    env.NIX_CFLAGS_COMPILE = oa.env.NIX_CFLAGS_COMPILE + toString (
+      lib.optionals stdenv.isLinux [
+        " -Wno-error=ignored-attributes"
+      ]
+    );
+
     vendorHash = "sha256-06MkjXl0DKFzIH/H+uT9kXsQdPq7qdZh2dlLW/YhJuk=";
   });
   # boring-sys expects the static libraries in build/ instead of lib/
