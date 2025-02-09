@@ -42,9 +42,9 @@ let
       rm ../BUILD
     '') + oa.preBuild;
 
-    env.NIX_CFLAGS_COMPILE = oa.env.NIX_CFLAGS_COMPILE + toString (
-      lib.optionals stdenv.isLinux [
-        " -Wno-error=ignored-attributes"
+    env.NIX_CFLAGS_COMPILE = oa.env.NIX_CFLAGS_COMPILE + " " + toString (
+      lib.optionals stdenv.cc.isGNU [
+        "-Wno-error=ignored-attributes"
       ]
     );
 
