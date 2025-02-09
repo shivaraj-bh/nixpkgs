@@ -23,8 +23,9 @@ let
     rev = "44b3df6f03d85c901767250329c571db405122d5";
     hash = "sha256-REELo7X9aFy2OHjubYLO1UQXLTgekD4QFd2vyFthIrg=";
   };
-  boringsslPatched = boringssl.overrideAttrs (oa: {
+  boringsslPatched = boringssl.overrideAttrs (oa: rec {
     src = boringsslSrc;
+    modRoot = "./src";
     patches = [
       # A patch required to build boringssl compatible with `boring-sys2`.
       # See https://github.com/0x676e67/boring2/blob/1a0f1cd24e728aac100df68027c820f858199224/boring-sys/build/main.rs#L486-L489
@@ -34,16 +35,14 @@ let
         hash = "sha256-lM+2lLvfDHnxLl+OgZ6R8Y4Z6JfA9AiDqboT1mbxmao=";
       })
     ];
-    installPhase = ''
-      mkdir -p $bin/bin $dev $out/lib
 
-      mv bssl $bin/bin
+    # Remove bazel specific build file to make way for build directory
+    # This is a problem on Darwin because of case-insensitive filesystem
+    preBuild = (lib.optionalString (stdenv.isDarwin) ''
+      rm ../BUILD
+    '') + oa.preBuild;
 
-      mv libssl.a           $out/lib
-      mv libcrypto.a     $out/lib
-
-      mv ../src/include $dev
-    '';
+    vendorHash = "sha256-06MkjXl0DKFzIH/H+uT9kXsQdPq7qdZh2dlLW/YhJuk=";
   });
   # boring-sys expects the static libraries in build/ instead of lib/
   boringssl-wrapper = runCommand "boringssl-wrapper" { } ''
